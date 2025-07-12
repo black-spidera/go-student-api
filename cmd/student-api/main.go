@@ -20,7 +20,7 @@ func main() {
 	// DB connection and other initializations can be done here
 	// Route handlers can be set up here
 	routers := http.NewServeMux()
-	routers.HandleFunc("/", students.New())
+	routers.HandleFunc("POST /v1/api/students", students.New())
 	// Start the HTTP server with the configuration
 	server := &http.Server{
 		Addr:    config.HTTPServer.Addr,

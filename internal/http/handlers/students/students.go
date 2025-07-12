@@ -1,9 +1,20 @@
 package students
 
-import "net/http"
+import (
+	"encoding/json"
+	"github/black-spidera/student-api/internal/types"
+	"github/black-spidera/student-api/internal/utils"
+	"net/http"
+)
 
 func New() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome to the Go Student API!"))
+		person := &types.Person{}
+
+		if err := json.NewDecoder(r.Body).Decode(person); err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, "Invalid request payload")
+			return
+		}
+
 	}
 }
