@@ -14,9 +14,9 @@ import (
 
 func New() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		person := &types.Person{}
+		student := &types.Student{}
 
-		err := json.NewDecoder(r.Body).Decode(person)
+		err := json.NewDecoder(r.Body).Decode(student)
 		if errors.Is(err, io.EOF) {
 			utils.WriteJSONResponse(w, http.StatusBadRequest, "Request body cannot be empty")
 			return
@@ -25,14 +25,14 @@ func New() http.HandlerFunc {
 			return
 		}
 
-		err = validator.New().Struct(person)
+		err = validator.New().Struct(student)
 		if err != nil {
 			validatorError := err.(validator.ValidationErrors)
 			utils.WriteJSONResponse(w, http.StatusBadRequest, utils.ValidationErrorFormat(validatorError))
 			return
 		}
 
-		utils.WriteJSONResponse(w, http.StatusCreated, fmt.Sprintf("Student %s created successfully", person.Name))
+		utils.WriteJSONResponse(w, http.StatusCreated, fmt.Sprintf("Student %s created successfully", student.Name))
 
 	}
 }
