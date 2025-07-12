@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github/black-spidera/student-api/internal/storage"
 	"github/black-spidera/student-api/internal/types"
 	"github/black-spidera/student-api/internal/utils"
 	"io"
@@ -12,7 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func New() http.HandlerFunc {
+func New(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		student := &types.Student{}
 
@@ -32,7 +33,13 @@ func New() http.HandlerFunc {
 			return
 		}
 
-		utils.WriteJSONResponse(w, http.StatusCreated, fmt.Sprintf("Student %s created successfully", student.Name))
+		id, err := storage.CreateStudent(student.Name, student.Email, student.Age)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusInternalServerError, fmt.Sprintf("Failed to create student: %v", err))
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusCreated, map[string]string{fmt.Sprintf("student_%d", id): "created"})
 
 	}
 }

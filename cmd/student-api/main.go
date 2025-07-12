@@ -19,14 +19,14 @@ func main() {
 	config := config.ConfigLoader()
 
 	// DB connection and other initializations can be done here
-	_, err := sqlite.New(config)
+	storage, err := sqlite.New(config)
 	if err != nil {
 		slog.Error("Failed to connect to the database", "error", err)
 		os.Exit(1)
 	}
 	// Route handlers can be set up here
 	routers := http.NewServeMux()
-	routers.HandleFunc("POST /v1/api/students", students.New())
+	routers.HandleFunc("POST /v1/api/students", students.New(storage))
 	// Start the HTTP server with the configuration
 	server := &http.Server{
 		Addr:    config.HTTPServer.Addr,
