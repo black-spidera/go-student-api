@@ -9,6 +9,7 @@ import (
 	"github/black-spidera/student-api/internal/utils"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -41,5 +42,30 @@ func New(storage storage.Storage) http.HandlerFunc {
 
 		utils.WriteJSONResponse(w, http.StatusCreated, map[string]string{fmt.Sprintf("student_%d", id): "created"})
 
+	}
+}
+
+func GetById(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusBadRequest, "Invalid student ID")
+			return
+		}
+
+		student, err := storage.GetStudentById(id)
+		if err != nil {
+			utils.WriteJSONResponse(w, http.StatusInternalServerError, fmt.Sprintf("Failed to retrieve student: %v", err))
+			return
+		}
+
+		if student.Id == 0 {
+			utils.WriteJSONResponse(w, http.StatusNotFound, "Student not found")
+			return
+		}
+
+		utils.WriteJSONResponse(w, http.StatusOK, student)
 	}
 }

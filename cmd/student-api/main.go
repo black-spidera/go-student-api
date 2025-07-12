@@ -27,6 +27,7 @@ func main() {
 	// Route handlers can be set up here
 	routers := http.NewServeMux()
 	routers.HandleFunc("POST /v1/api/students", students.New(storage))
+	routers.HandleFunc("GET /v1/api/students/{id}", students.GetById(storage))
 	// Start the HTTP server with the configuration
 	server := &http.Server{
 		Addr:    config.HTTPServer.Addr,
