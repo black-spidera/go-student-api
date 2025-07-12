@@ -26,7 +26,7 @@ func WriteJSONResponse(w http.ResponseWriter, status int, data interface{}) erro
 	return json.NewEncoder(w).Encode(response)
 }
 
-func ValidationErrorFormat(err validator.ValidationErrors) *Response {
+func ValidationErrorFormat(err validator.ValidationErrors) string {
 	var errorsSlice []string
 	for _, fieldError := range err {
 		switch fieldError.ActualTag() {
@@ -36,9 +36,5 @@ func ValidationErrorFormat(err validator.ValidationErrors) *Response {
 			errorsSlice = append(errorsSlice, fieldError.Field()+" is invalid")
 		}
 	}
-	return &Response{
-		Status:  http.StatusBadRequest,
-		Message: "Validation failed",
-		Data:    strings.Join(errorsSlice, ", "),
-	}
+	return strings.Join(errorsSlice, ", ")
 }
